@@ -1,5 +1,7 @@
-import { AudioPlayer, AudioResource, createAudioResource } from "@discordjs/voice";
+import { AudioPlayer, AudioResource, createAudioResource, StreamType } from "@discordjs/voice";
 import ytDownloader from 'ytdl-core';
+import fs from 'fs';
+import { join } from 'path';
 
 export interface Song {
   url: string;
@@ -26,12 +28,15 @@ export class Queue {
       throw new Error('Nothing to play.');
     }
 
-    const audioResource = this.createResource(
-      ytDownloader(
-        this.currentlyPlaying!.url,
-        { filter: 'audioonly' },
-      ),
+    const streamToSave = ytDownloader(
+      this.currentlyPlaying!.url,
+      { filter: 'audioonly' },
     );
+
+    await this.downloadResource(streamToSave);
+
+    const fileName = this.safeFileName();;
+    const audioResource = this.createResource(join(__dirname, '..', '..', 'media', `${fileName}-${this.guildId}.mp3`));
 
     this.audioPlayer.play(audioResource);
   };
@@ -51,13 +56,13 @@ export class Queue {
   };
 
   stop(): void {
-    this.currentlyPlaying = null;
     this.nextSongs = [];
 
     this.audioPlayer.stop();
   };
 
   skip(): void {
+    this.deleteOldSong();
     const nextSong = this.nextSongs.shift() as Song;
     this.currentlyPlaying = nextSong;
 
@@ -84,7 +89,39 @@ export class Queue {
     return this.audioPlayer;
   };
 
-  private createResource(stream: any): AudioResource {
-    return createAudioResource(stream);
+  deleteOldSong(): void {
+    const fileName = this.safeFileName();
+    fs.unlinkSync(join(__dirname, '..', '..', 'media', `${fileName}-${this.guildId}.mp3`));
+    this.currentlyPlaying = null;
   };
+
+  private downloadResource(sourceStream: any): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const fileName = this.safeFileName();
+      const writeStream = fs.createWriteStream(join(__dirname, '..', '..', 'media', `${fileName}-${this.guildId}.mp3`));
+
+      sourceStream.pipe(writeStream);
+      sourceStream.on('finish', () => {
+        resolve();
+      });
+
+      sourceStream.on('error', (err: any) => {
+        console.log('Error');
+        console.log(err);
+        reject();
+      });
+    });
+  }
+
+  private createResource(stream: any): AudioResource {
+    return createAudioResource(stream, { inputType: StreamType.Opus });
+  };
+
+  private safeFileName(): string {
+    if (!this.currentlyPlaying) {
+      return '';
+    }
+
+    return this.currentlyPlaying.name.replace('|', '');
+  }
 };

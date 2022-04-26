@@ -1,3 +1,4 @@
 build
 node_modules
+media/*.mp3
 .env

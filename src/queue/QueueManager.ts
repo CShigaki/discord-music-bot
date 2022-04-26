@@ -3,11 +3,6 @@ import { Queue } from "./Queue";
 
 let queueManager: QueueManager;
 
-export interface Song {
-  url: string;
-  name: string;
-}
-
 export class QueueManager {
   private queuesByGuildId: { [ guildId: string ]: Queue } = {};
 

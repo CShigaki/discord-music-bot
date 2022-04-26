@@ -47,7 +47,7 @@ export const handleChannelCommands = ({
 
   switch (command) {
     case '~play':
-      handlePlay(msg, splitMessage[1]);
+      handlePlay(msg);
       break;
     case '~skip':
       handleSkip(msg);
