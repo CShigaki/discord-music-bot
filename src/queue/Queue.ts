@@ -35,8 +35,8 @@ export class Queue {
 
     await this.downloadResource(streamToSave);
 
-    const fileName = this.safeFileName();;
-    const audioResource = this.createResource(join(__dirname, '..', '..', 'media', `${fileName}-${this.guildId}.mp3`));
+    const fileName = this.safeFileName();
+    const audioResource = this.createResource(join(process.cwd(), 'media', `${fileName}-${this.guildId}.mp3`));
 
     this.audioPlayer.play(audioResource);
   };
@@ -91,14 +91,14 @@ export class Queue {
 
   deleteOldSong(): void {
     const fileName = this.safeFileName();
-    fs.unlinkSync(join(__dirname, '..', '..', 'media', `${fileName}-${this.guildId}.mp3`));
+    fs.unlinkSync(join(process.cwd(), 'media', `${fileName}-${this.guildId}.mp3`));
     this.currentlyPlaying = null;
   };
 
   private downloadResource(sourceStream: any): Promise<void> {
     return new Promise((resolve, reject) => {
       const fileName = this.safeFileName();
-      const writeStream = fs.createWriteStream(join(__dirname, '..', '..', 'media', `${fileName}-${this.guildId}.mp3`));
+      const writeStream = fs.createWriteStream(join(process.cwd(), 'media', `${fileName}-${this.guildId}.mp3`));
 
       sourceStream.pipe(writeStream);
       sourceStream.on('finish', () => {
