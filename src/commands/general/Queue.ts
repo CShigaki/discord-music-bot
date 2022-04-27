@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
-import { Queue } from "../../queue/Queue";
-import { QueueManager, Song } from "../../queue/QueueManager";
+import { Queue, Song } from "../../queue/Queue";
+import { QueueManager } from "../../queue/QueueManager";
 
 export const handleQueue = (msg: Message) => {
   const guildId = msg.guildId as string;
