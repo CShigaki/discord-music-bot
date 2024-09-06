@@ -1,5 +1,5 @@
 import { AudioPlayer, AudioResource, createAudioResource, StreamType } from "@discordjs/voice";
-import ytDownloader from 'ytdl-core';
+import ytDownloader from '@distube/ytdl-core';
 import fs from 'fs';
 import { join } from 'path';
 
@@ -118,7 +118,7 @@ export class Queue {
   };
 
   private safeFileName(): string {
-    if (!this.currentlyPlaying) {
+    if (!this.currentlyPlaying || !this.currentlyPlaying.name) {
       return '';
     }
 

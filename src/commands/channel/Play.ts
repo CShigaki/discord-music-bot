@@ -1,6 +1,6 @@
-import ytDownloader from 'ytdl-core';
+import ytDownloader from '@distube/ytdl-core';
 import { Message } from 'discord.js';
-import ytSearcher from 'ytsr';
+import ytSearcher from '@distube/ytsr';
 import {
   AudioPlayerStatus,
 	joinVoiceChannel, VoiceConnectionStatus,
