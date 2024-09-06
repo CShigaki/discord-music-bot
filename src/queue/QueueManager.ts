@@ -21,7 +21,7 @@ export class QueueManager {
   createQueue(guildId: string): Queue {
     const audioPlayer = createAudioPlayer({
       behaviors: {
-        noSubscriber: NoSubscriberBehavior.Pause,
+        noSubscriber: NoSubscriberBehavior.Play,
       },
     });
 

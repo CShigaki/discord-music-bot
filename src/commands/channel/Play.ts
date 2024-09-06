@@ -22,14 +22,17 @@ const getQueryInfo = async (msg: Message, input: string): Promise<Song | null> =
     }
   }
 
-  const { items } = await ytSearcher(input, { safeSearch: true, limit: 1, pages: 1 });
-  if (items.length === 0 || items[0].type !== 'video') {
+  const results: ytSearcher.VideoResult = await ytSearcher(input, { safeSearch: true, limit: 1 });
+  const { items } = results;
+  const firstResult = items.pop();
+
+  if (!firstResult || firstResult.type !== 'video') {
     msg.reply("Somehow I didn't find anything for this query.");
 
     return null;
   }
 
-  return { url: items[0].url, name: items[0].title };
+  return { url: firstResult.url, name: firstResult.name };
 };
 
 export const handlePlay = async (

@@ -1,6 +1,7 @@
 import { AudioPlayer, AudioResource, createAudioResource, StreamType } from "@discordjs/voice";
 import ytDownloader from '@distube/ytdl-core';
 import fs from 'fs';
+import ffmpeg from 'fluent-ffmpeg';
 import { join } from 'path';
 
 export interface Song {
@@ -30,7 +31,7 @@ export class Queue {
 
     const streamToSave = ytDownloader(
       this.currentlyPlaying!.url,
-      { filter: 'audioonly' },
+      { filter: 'audio' },
     );
 
     await this.downloadResource(streamToSave);
@@ -98,23 +99,23 @@ export class Queue {
   private downloadResource(sourceStream: any): Promise<void> {
     return new Promise((resolve, reject) => {
       const fileName = this.safeFileName();
-      const writeStream = fs.createWriteStream(join(process.cwd(), 'media', `${fileName}-${this.guildId}.mp3`));
-
-      sourceStream.pipe(writeStream);
-      sourceStream.on('finish', () => {
-        resolve();
-      });
-
-      sourceStream.on('error', (err: any) => {
-        console.log('Error');
-        console.log(err);
-        reject();
-      });
+      ffmpeg(sourceStream)
+        .audioBitrate(128)
+        .save(join(process.cwd(), 'media', `${fileName}-${this.guildId}.mp3`))
+        .on('progress', p => {
+          process.stdout.write(`${p.targetSize}kb downloaded\n`);
+        })
+        .on('end', () => {
+          resolve();
+        })
+        .on('error', (err) => {
+          reject();
+        });
     });
   }
 
   private createResource(stream: any): AudioResource {
-    return createAudioResource(stream, { inputType: StreamType.Opus });
+    return createAudioResource(stream, { inputType: StreamType.Arbitrary });
   };
 
   private safeFileName(): string {
