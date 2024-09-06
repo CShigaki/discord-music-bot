@@ -8,3 +8,10 @@ yarn start // without hot reload
 ```
 
 For available commands type `~help` or check `Help.ts`.
+
+### Adding to a server
+
+Because I'm going to forget this later
+
+- Go to https://discord.com/developers/applications -> Oauth2
+- Check this for scope permissions needed https://github.com/milan090/simple-discord-music-bot/blob/master/CREATE_BOT.md
